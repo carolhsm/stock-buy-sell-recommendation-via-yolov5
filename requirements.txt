@@ -36,5 +36,4 @@ seaborn>=0.11.0
 # roboflow
 yfinance
 mplfinance
-cv2
 thop  # FLOPs computation
