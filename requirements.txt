@@ -38,4 +38,7 @@ yfinance
 mplfinance
 opencv-python-headless
 opencv-contrib-python
+Common
+Detect
+base
 thop  # FLOPs computation
