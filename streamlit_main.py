@@ -26,10 +26,12 @@ import streamlit as st
 
 #100 day chart
 step = 100
+
 # start date = today-100
-start_date = (datetime.date.today() - datetime.timedelta(days = 200)).strftime("%Y-%m-%d")
+#start_date = (datetime.date.today() - datetime.timedelta(days = 200)).strftime("%Y-%m-%d")
 # end date = today
-end_date = datetime.date.today().strftime("%Y-%m-%d")
+#end_date = datetime.date.today().strftime("%Y-%m-%d")
+
 # save path of all elements
 save_path = os.getcwd()
 
@@ -66,7 +68,7 @@ def get_now_data(stock):
 ######################################################################
 # download prices from yahoo finance and save as df
 def get_stock_data(stock,start_date,end_date):
-  df = yf.download(stock, start=start_date, end = end_date) 
+  df = yf.download(stock, start=start_date, end = end_date + datetime.timedelta(days = 1)) 
   # drop the 'Adj Close' since this is not required for plotting the candlestick chart
   df = df.drop('Adj Close',axis=1)
   st.write('Past 5 days trend')
@@ -133,7 +135,7 @@ def buy_or_sell(user_action):
   # Message to user
   st.header('Recommendation:')
   if any(result):
-      st.subheader("Suggest to" + user_action + "now.")
+      st.subheader("Suggest to " + user_action + " now.")
   else:
       st.subheader("Suggest to hold.")
 
@@ -175,10 +177,14 @@ def main():
   st.sidebar.subheader('Would you like to buy or sell?')
   user_action = st.sidebar.radio('Buy or sell',['buy', 'sell'])
 
-  # ask for stock (what if input not recognized?)
+  # ask for stock 
   st.sidebar.subheader('Which stock to ' + user_action + ' now?')
   stock = st.sidebar.text_input('Ticker Symbol', placeholder = 'e.g. TSLA')
   stock = stock.upper()
+
+  # ask date
+  st.sidebar.subheader("What day you'd like to ask?")
+  ask_date = st.sidebar.date_input('Ask day:')
 
   # if user would like to sell, ask for his/her buy price for calculation at suggestion stage
   if user_action == 'sell':
@@ -236,7 +242,7 @@ def main():
         get_now_data(stock)
 
         #get data from yfinance
-        df = get_stock_data(stock,start_date,end_date)
+        df = get_stock_data(stock,(ask_date - datetime.timedelta(days = 200)).strftime("%Y-%m-%d"),ask_date)
 
         #plot fake candles chart
         plot_fake_candles_chart(stock,df[-step+5:])
